@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux & Cloud Computing Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .floating-timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1001;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .floating-timer.active {
+            display: block;
+        }
+
+        .floating-timer.warning {
+            background: linear-gradient(135deg, #ff3b30 0%, #ff6b58 100%);
+            animation: pulse 1s infinite;
+        }
+
+        .warning-banner {
+            background: #ff3b30;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            font-size: 16px;
+        }
+
+        .warning-banner.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
+        .violation-banner {
+            background: #ff9500;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            font-size: 14px;
+        }
+
+        .violation-banner.show {
+            display: block;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .login-screen, .test-screen, .admin-screen {
+            display: none;
+        }
+
+        .login-screen.active, .test-screen.active, .admin-screen.active {
+            display: block;
+        }
+
+        .thankyou-screen {
+            display: none;
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .thankyou-screen.active {
+            display: block;
+        }
+
+        .thankyou-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: checkmark 0.6s ease;
+        }
+
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .thankyou-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 15px;
+        }
+
+        .thankyou-message {
+            font-size: 18px;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .thankyou-details {
+            background: #f3f4f6;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .thankyou-details h3 {
+            color: #1e3c72;
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .detail-value {
+            color: #6b7280;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 60, 114, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(75, 85, 99, 0.3);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(75, 85, 99, 0.4);
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 25px;
+            border-left: 5px solid #2a5298;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .question-number {
+            color: #1e3c72;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .question-text {
+            font-size: 17px;
+            margin-bottom: 18px;
+            color: #1f2937;
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        .options {
+            margin-top: 15px;
+        }
+
+        .option {
+            background: white;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: #2a5298;
+            background: #eff6ff;
+            transform: translateX(4px);
+        }
+
+        .option input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: #2a5298;
+        }
+
+        .option.selected {
+            border-color: #2a5298;
+            background: #dbeafe;
+            font-weight: 500;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .status-bar.active {
+            display: flex;
+        }
+
+        .save-indicator {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .progress-info {
+            color: #666;
+        }
+
+        .violation-counter {
+            color: #ff3b30;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .dragon-warning {
+            color: #ff3b30;
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            animation: dragonPulse 2s infinite;
+            display: none;
+        }
+
+        .dragon-warning.active {
+            display: flex;
+        }
+
+        @keyframes dragonPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        .webcam-indicator {
+            color: #007aff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .webcam-dot {
+            width: 10px;
+            height: 10px;
+            background: #ff3b30;
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.3; }
+        }
+
+        .admin-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .response-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2a5298;
+        }
+
+        .violation-details {
+            background: #fff3cd;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .instructions {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+
+        .instructions h3 {
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .proctoring-notice {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .proctoring-notice strong {
+            color: #856404;
+        }
+
+        #webcamPreview {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 200px;
+            border: 3px solid #2a5298;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 999;
+        }
+
+        .snapshot-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .snapshot-gallery img {
+            width: 100px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="warning-banner" id="warningBanner">
+        ⚠️ WARNING: Please return to full-screen mode immediately!
+    </div>
+    <div class="violation-banner" id="violationBanner"></div>
+    <div class="floating-timer" id="floatingTimer">40:00</div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Linux & Cloud Computing Test</h1>
+        </div>
+
+        <div class="content">
+            <!-- Login Screen -->
+            <div class="login-screen active" id="loginScreen">
+                <div class="instructions">
+                    <h3>📋 Test Instructions</h3>
+                    <ul>
+                        <li>Total Duration: <strong>40 minutes</strong></li>
+                        <li>Questions: 20 Multiple Choice + 5 Short Answer</li>
+                        <li>The test will enter full-screen mode automatically</li>
+                        <li>Your answers are auto-saved every 30 seconds</li>
+                        <li>Test will auto-submit when time expires</li>
+                        <li>Do not exit full-screen or switch tabs</li>
+                        <li>Copy-paste is disabled</li>
+                    </ul>
+                </div>
+
+                <div class="proctoring-notice">
+                    <strong>🔒 Proctoring Enabled:</strong>
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li>Webcam monitoring will capture periodic snapshots</li>
+                        <li>Tab switches and window focus changes are tracked</li>
+                        <li>All violations are logged and reported</li>
+                        <li>Excessive violations may result in auto-submission</li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentName">Enter Your Full Name:</label>
+                    <input type="text" id="studentName" placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentEmail">Enter Your Email:</label>
+                    <input type="text" id="studentEmail" placeholder="john@example.com" required>
+                </div>
+
+                <button class="btn" onclick="startTest()">Start Test & Enable Webcam</button>
+                <button class="btn btn-secondary" onclick="showAdmin()">Admin Access</button>
+            </div>
+
+            <!-- Test Screen -->
+            <div class="test-screen" id="testScreen">
+                <div id="questionsContainer"></div>
+                <div style="margin-top: 30px; text-align: center;">
+                    <button class="btn" onclick="confirmSubmit()" style="max-width: 400px; margin: 0 auto;">
+                        Submit Test
+                    </button>
+                    <p style="color: #666; margin-top: 10px; font-size: 14px;">
+                        Make sure you've answered all questions before submitting!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Admin Screen -->
+            <div class="admin-screen" id="adminScreen">
+                <h2>Admin Panel</h2>
+                <div class="form-group">
+                    <label for="adminPassword">Admin Password:</label>
+                    <input type="password" id="adminPassword" placeholder="Enter password">
+                    <button class="btn" onclick="verifyAdmin()" style="margin-top: 10px;">Login</button>
+                </div>
+                <div class="admin-panel" id="adminPanel" style="display: none;">
+                    <h3>Test Responses</h3>
+                    <button class="btn" onclick="downloadCSV()">Download All Responses (CSV)</button>
+                    <button class="btn btn-secondary" onclick="downloadSnapshots()">Download All Webcam Snapshots (ZIP)</button>
+                    <div id="responsesList"></div>
+                </div>
+                <button class="btn btn-secondary" onclick="backToLogin()">Back to Test</button>
+            </div>
+
+            <!-- Thank You Screen -->
+            <div class="thankyou-screen" id="thankyouScreen">
+                <div class="thankyou-icon">✅</div>
+                <h2 class="thankyou-title">Thank You for Completing the Test!</h2>
+                <p class="thankyou-message">
+                    Your responses have been successfully submitted and saved.<br>
+                    Your performance will be evaluated and results will be shared with you soon.
+                </p>
+                <div class="thankyou-details" id="submissionDetails">
+                    <h3>Submission Summary</h3>
+                </div>
+                <button class="btn" onclick="location.reload()">Return to Home</button>
+            </div>
+        </div>
+    </div>
+
+    <video id="webcamPreview" autoplay muted></video>
+    <canvas id="snapshotCanvas" style="display: none;"></canvas>
+
+    <div class="status-bar" id="statusBar">
+        <div class="save-indicator" id="saveIndicator">✓ Saved</div>
+        <div class="webcam-indicator" id="webcamIndicator">
+            <span class="webcam-dot"></span>
+            <span>Recording</span>
+        </div>
+        <div class="dragon-warning" id="dragonWarning">
+            🐉 <span>Dragons are watching...</span>
+        </div>
+        <div class="violation-counter" id="violationCounter">Violations: 0</div>
+        <div class="progress-info" id="progressInfo">Progress: 0/25</div>
+    </div>
+
+    <script>
+        // Prevent copy, paste, cut
+        document.addEventListener('copy', e => e.preventDefault());
+        document.addEventListener('paste', e => e.preventDefault());
+        document.addEventListener('cut', e => e.preventDefault());
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Disable keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a' || e.key === 'u' || e.key === 's' || e.key === 'p')) {
+                e.preventDefault();
+            }
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || e.key === 'PrintScreen') {
+                e.preventDefault();
+            }
+        });
+
+        const ADMIN_PASSWORD = 'ogdragon';
+        const MAX_VIOLATIONS = 10;
+        const SNAPSHOT_INTERVAL = 60000;
+        const TEST_DURATION = 40 * 60; // 40 minutes in seconds
+
+        let testStartTime;
+        let timerInterval;
+        let autoSaveInterval;
+        let snapshotInterval;
+        let currentStudent = {};
+        let webcamStream = null;
+        let violations = {
+            fullscreenExits: 0,
+            tabSwitches: 0,
+            windowBlurs: 0,
+            total: 0
+        };
+
+        const questions = [
+            // Multiple Choice Questions
+            {type: 'mcq', question: 'Which command is used to print the full path of the current working directory?', options: ['ls', 'cd', 'pwd', 'cat'], correct: 'pwd'},
+            {type: 'mcq', question: 'How do you create a new, empty file named report.txt?', options: ['mkdir report.txt', 'touch report.txt', 'cat report.txt', 'new report.txt'], correct: 'touch report.txt'},
+            {type: 'mcq', question: 'Which command would you use to display the last 10 lines of a file named logfile.log?', options: ['head logfile.log', 'less logfile.log', 'cat logfile.log', 'tail logfile.log'], correct: 'tail logfile.log'},
+            {type: 'mcq', question: 'What is the primary function of the grep command?', options: ['To edit files', 'To search for text patterns within files', 'To copy files', 'To list file permissions'], correct: 'To search for text patterns within files'},
+            {type: 'mcq', question: 'In the Nano text editor, which keyboard shortcut is used to save the file (WriteOut)?', options: ['Ctrl + X', 'Ctrl + S', 'Ctrl + O', 'Ctrl + W'], correct: 'Ctrl + O'},
+            {type: 'mcq', question: 'Which command is used to change file permissions?', options: ['chown', 'chgrp', 'chmod', 'perm'], correct: 'chmod'},
+            {type: 'mcq', question: 'To install a software package (like htop) on Ubuntu using the command line, you would use:', options: ['yum install htop', 'apt-get install htop', 'install package htop', 'pkg install htop'], correct: 'apt-get install htop'},
+            {type: 'mcq', question: 'Which command would you use to see a list of currently running processes?', options: ['ps', 'top', 'netstat', 'Both a and b'], correct: 'Both a and b'},
+            {type: 'mcq', question: 'In the permission string drwxr-xr--, what does the first character d signify?', options: ['It is a device file', 'It is a directory', 'The file is deletable', 'It is a data file'], correct: 'It is a directory'},
+            {type: 'mcq', question: 'Which systemctl command would you use to check if the apache2 service is running?', options: ['systemctl start apache2', 'systemctl enable apache2', 'systemctl status apache2', 'systemctl stop apache2'], correct: 'systemctl status apache2'},
+            {type: 'mcq', question: 'What is the main purpose of DNS (Domain Name System)?', options: ['To assign IP addresses to computers', 'To translate human-readable domain names (like google.com) into IP addresses', 'To secure network traffic', 'To manage network hardware'], correct: 'To translate human-readable domain names (like google.com) into IP addresses'},
+            {type: 'mcq', question: 'Which command is most commonly used to test network connectivity to another host by sending packets?', options: ['ip', 'ifconfig', 'netstat', 'ping'], correct: 'ping'},
+            {type: 'mcq', question: 'What is SSH (Secure Shell) primarily used for?', options: ['Browsing websites securely', 'Transferring files graphically', 'Providing a secure remote login to a server\'s command line', 'Streaming video content'], correct: 'Providing a secure remote login to a server\'s command line'},
+            {type: 'mcq', question: 'In networking, what is a "port"?', options: ['A physical connector on a router', 'A numerical identifier for a specific application or service on a computer', 'A type of network cable', 'A security vulnerability'], correct: 'A numerical identifier for a specific application or service on a computer'},
+            {type: 'mcq', question: 'Which of these is a private IP address, not routable on the public internet?', options: ['8.8.8.8', '192.168.1.10', '13.107.21.200', '208.67.222.222'], correct: '192.168.1.10'},
+            {type: 'mcq', question: 'OpenStack is primarily an example of which cloud service model?', options: ['SaaS (Software as a Service)', 'PaaS (Platform as a Service)', 'IaaS (Infrastructure as a Service)', 'FaaS (Function as a Service)'], correct: 'IaaS (Infrastructure as a Service)'},
+            {type: 'mcq', question: 'Which OpenStack component is responsible for identity, user management, and authentication?', options: ['Nova', 'Glance', 'Cinder', 'Keystone'], correct: 'Keystone'},
+            {type: 'mcq', question: 'If you want to upload a new VM image (like an Ubuntu QCOW2 file) for others to use, which OpenStack service would you interact with?', options: ['Glance', 'Neutron', 'Nova', 'Swift'], correct: 'Glance'},
+            {type: 'mcq', question: 'The core OpenStack service that manages the lifecycle of virtual machines (creating, starting, stopping) is:', options: ['Cinder', 'Nova', 'Keystone', 'Neutron'], correct: 'Nova'},
+            {type: 'mcq', question: 'What is the function of a hypervisor (like KVM or VirtualBox)?', options: ['To manage network routing', 'To create, run, and manage virtual machines', 'To provide a web-based user interface', 'To store user passwords'], correct: 'To create, run, and manage virtual machines'},
+            
+            // Short Answer Questions
+            {type: 'short', question: 'What is the difference between the cat and less commands in Linux?'},
+            {type: 'short', question: 'In Linux, what is the purpose of file permissions? Briefly explain what "owner," "group," and "other" refer to.'},
+            {type: 'short', question: 'Explain the difference between a Public Cloud and a Private Cloud.'},
+            {type: 'short', question: 'What are the roles of Neutron and Cinder in an OpenStack environment?'},
+            {type: 'short', question: 'Describe the basic authentication flow in OpenStack. What does Keystone provide to a user after a successful login?'}
+        ];
+
+        async function startTest() {
+            const name = document.getElementById('studentName').value.trim();
+            const email = document.getElementById('studentEmail').value.trim();
+
+            if (!name || !email) {
+                alert('Please enter your name and email!');
+                return;
+            }
+
+            currentStudent = {
+                name: name,
+                email: email,
+                startTime: new Date().toISOString(),
+                answers: {},
+                violations: {
+                    fullscreenExits: 0,
+                    tabSwitches: 0,
+                    windowBlurs: 0,
+                    total: 0,
+                    timestamps: []
+                },
+                snapshots: []
+            };
+
+            // Request webcam access
+            try {
+                await initializeWebcam();
+                document.getElementById('loginScreen').classList.remove('active');
+                document.getElementById('testScreen').classList.add('active');
+                document.getElementById('statusBar').classList.add('active');
+                document.getElementById('floatingTimer').classList.add('active');
+
+                renderQuestions();
+                startTimer();
+                startAutoSave();
+                startWebcamSnapshots();
+                enterFullScreen();
+                setupViolationMonitoring();
+            } catch (error) {
+                alert('Webcam access is required to take the test. Please allow camera permissions and try again.');
+                console.error('Webcam error:', error);
+            }
+        }
+
+        async function initializeWebcam() {
+            try {
+                webcamStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 640, height: 480 } 
+                });
+                const video = document.getElementById('webcamPreview');
+                video.srcObject = webcamStream;
+                video.style.display = 'block';
+                return true;
+            } catch (error) {
+                throw new Error('Camera access denied');
+            }
+        }
+
+        function startWebcamSnapshots() {
+            // Take first snapshot immediately
+            captureSnapshot();
+            
+            // Then take snapshots every 60 seconds
+            snapshotInterval = setInterval(() => {
+                captureSnapshot();
+            }, SNAPSHOT_INTERVAL);
+        }
+
+        function captureSnapshot() {
+            const video = document.getElementById('webcamPreview');
+            const canvas = document.getElementById('snapshotCanvas');
+            const context = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const snapshot = {
+                timestamp: new Date().toISOString(),
+                image: canvas.toDataURL('image/jpeg', 0.7)
+            };
+
+            currentStudent.snapshots.push(snapshot);
+            showSaveIndicator();
+        }
+
+        function setupViolationMonitoring() {
+            // Tab visibility change
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    logViolation('tabSwitch', 'Tab switched or minimized');
+                }
+            });
+
+            // Window blur (lost focus)
+            window.addEventListener('blur', () => {
+                logViolation('windowBlur', 'Window lost focus');
+            });
+
+            // Mouse leaving window
+            document.addEventListener('mouseleave', () => {
+                logViolation('mouseLeavee', 'Mouse left window area');
+            });
+        }
+
+        function logViolation(type, message) {
+            if (!document.getElementById('testScreen').classList.contains('active')) return;
+
+            violations.total++;
+            violations[type] = (violations[type] || 0) + 1;
+
+            currentStudent.violations.total++;
+            currentStudent.violations[type] = (currentStudent.violations[type] || 0) + 1;
+            currentStudent.violations.timestamps.push({
+                type: type,
+                message: message,
+                timestamp: new Date().toISOString()
+            });
+
+            updateViolationDisplay();
+            showViolationWarning(message);
+            showDragonWarning();
+
+            // Auto-submit if too many violations
+            if (violations.total >= MAX_VIOLATIONS) {
+                submitTest(true, 'Excessive violations detected');
+            }
+        }
+
+        function updateViolationDisplay() {
+            document.getElementById('violationCounter').textContent = 
+                `Violations: ${violations.total}`;
+        }
+
+        function showViolationWarning(message) {
+            const banner = document.getElementById('violationBanner');
+            banner.textContent = `⚠️ VIOLATION DETECTED: ${message} (${violations.total}/${MAX_VIOLATIONS})`;
+            banner.classList.add('show');
+
+            setTimeout(() => {
+                banner.classList.remove('show');
+            }, 4000);
+        }
+
+        function showDragonWarning() {
+            const dragonWarning = document.getElementById('dragonWarning');
+            dragonWarning.classList.add('active');
+            
+            // Keep it visible for 10 seconds after a violation
+            setTimeout(() => {
+                if (violations.total === 0) {
+                    dragonWarning.classList.remove('active');
+                }
+            }, 10000);
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            questions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+
+                let html = `
+                    <div class="question-number">Question ${index + 1} ${q.type === 'short' ? '(Short Answer)' : '(Multiple Choice)'}</div>
+                    <div class="question-text">${q.question}</div>
+                `;
+
+                if (q.type === 'mcq') {
+                    html += '<div class="options">';
+                    q.options.forEach((opt, optIndex) => {
+                        const optionId = `q${index}_opt${optIndex}`;
+                        html += `
+                            <div class="option" onclick="selectOption(${index}, '${opt}', this)">
+                                <input type="radio" name="q${index}" id="${optionId}" value="${opt}">
+                                <label for="${optionId}">${String.fromCharCode(97 + optIndex)}) ${opt}</label>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                } else {
+                    html += `<textarea id="q${index}" placeholder="Type your answer here..." oninput="saveShortAnswer(${index})"></textarea>`;
+                }
+
+                card.innerHTML = html;
+                container.appendChild(card);
+            });
+        }
+
+        function selectOption(qIndex, value, element) {
+            const radio = element.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            element.parentElement.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+
+            currentStudent.answers[qIndex] = value;
+            updateProgress();
+            showSaveIndicator();
+        }
+
+        function saveShortAnswer(qIndex) {
+            const textarea = document.getElementById(`q${qIndex}`);
+            currentStudent.answers[qIndex] = textarea.value;
+            updateProgress();
+            showSaveIndicator();
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(currentStudent.answers).length;
+            document.getElementById('progressInfo').textContent = `Progress: ${answered}/25`;
+        }
+
+        function showSaveIndicator() {
+            const indicator = document.getElementById('saveIndicator');
+            indicator.textContent = '💾 Saving...';
+            setTimeout(() => {
+                indicator.textContent = '✓ Saved';
+            }, 500);
+        }
+
+        function startTimer() {
+            let timeLeft = TEST_DURATION;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                const floatingTimer = document.getElementById('floatingTimer');
+                floatingTimer.textContent = display;
+
+                if (timeLeft <= 300) {
+                    floatingTimer.classList.add('warning');
+                }
+
+                if (timeLeft <= 0) {
+                    submitTest(true, 'Time expired');
+                }
+            }, 1000);
+        }
+
+        function startAutoSave() {
+            autoSaveInterval = setInterval(() => {
+                saveToStorage();
+                showSaveIndicator();
+            }, 30000);
+        }
+
+        function saveToStorage() {
+            const allResponses = JSON.parse(localStorage.getItem('testResponses') || '[]');
+            const existingIndex = allResponses.findIndex(r => r.email === currentStudent.email);
+            
+            currentStudent.lastSaved = new Date().toISOString();
+            
+            if (existingIndex >= 0) {
+                allResponses[existingIndex] = currentStudent;
+            } else {
+                allResponses.push(currentStudent);
+            }
+            
+            localStorage.setItem('testResponses', JSON.stringify(allResponses));
+        }
+
+        function confirmSubmit() {
+            const answered = Object.keys(currentStudent.answers).length;
+            const unanswered = 25 - answered;
+            
+            let message = `You have answered ${answered} out of 25 questions.`;
+            
+            if (unanswered > 0) {
+                message += `\n\n${unanswered} question(s) are still unanswered.`;
+                message += '\n\nAre you sure you want to submit the test now?';
+            } else {
+                message += '\n\nAre you sure you want to submit the test?';
+            }
+            
+            if (confirm(message)) {
+                submitTest(false, 'Manual submission');
+            }
+        }
+
+        function submitTest(autoSubmit = false, reason = '') {
+            clearInterval(timerInterval);
+            clearInterval(autoSaveInterval);
+            clearInterval(snapshotInterval);
+
+            currentStudent.endTime = new Date().toISOString();
+            currentStudent.submitted = true;
+            currentStudent.submissionReason = reason || 'Manual submission';
+            
+            // Capture final snapshot
+            captureSnapshot();
+            
+            saveToStorage();
+
+            // Stop webcam
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+            }
+
+            exitFullScreen();
+
+            // Show thank you screen instead of alert
+            showThankYouScreen();
+        }
+
+        function showThankYouScreen() {
+            // Hide test screen and status bar
+            document.getElementById('testScreen').classList.remove('active');
+            document.getElementById('statusBar').style.display = 'none';
+            document.getElementById('floatingTimer').classList.remove('active');
+            
+            // Show thank you screen
+            document.getElementById('thankyouScreen').classList.add('active');
+            
+            // Calculate test duration
+            const startTime = new Date(currentStudent.startTime);
+            const endTime = new Date(currentStudent.endTime);
+            const duration = Math.floor((endTime - startTime) / 1000 / 60);
+            
+            // Populate submission details
+            const detailsDiv = document.getElementById('submissionDetails');
+            detailsDiv.innerHTML = `
+                <h3>Submission Summary</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Student Name:</span>
+                    <span class="detail-value">${currentStudent.name}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">${currentStudent.email}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Questions Answered:</span>
+                    <span class="detail-value">${Object.keys(currentStudent.answers).length} / 25</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Test Duration:</span>
+                    <span class="detail-value">${duration} minutes</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Submission Time:</span>
+                    <span class="detail-value">${endTime.toLocaleString()}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Submission Type:</span>
+                    <span class="detail-value">${currentStudent.submissionReason}</span>
+                </div>
+            `;
+        }
+
+        function enterFullScreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+
+        function exitFullScreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
+        // Monitor fullscreen exits
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+        function handleFullscreenChange() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && 
+                !document.mozFullScreenElement && !document.msFullscreenElement) {
+                if (document.getElementById('testScreen').classList.contains('active')) {
+                    logViolation('fullscreenExit', 'Exited full-screen mode');
+                    document.getElementById('warningBanner').classList.add('show');
+                    
+                    setTimeout(() => {
+                        document.getElementById('warningBanner').classList.remove('show');
+                    }, 3000);
+
+                    setTimeout(enterFullScreen, 2000);
+                }
+            }
+        }
+
+        // Admin functions
+        function showAdmin() {
+            document.getElementById('loginScreen').classList.remove('active');
+            document.getElementById('adminScreen').classList.add('active');
+        }
+
+        function verifyAdmin() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('adminPanel').style.display = 'block';
+                loadResponses();
+            } else {
+                alert('Incorrect password!');
+            }
+        }
+
+        function loadResponses() {
+            const responses = JSON.parse(localStorage.getItem('testResponses') || '[]');
+            const container = document.getElementById('responsesList');
+            
+            if (responses.length === 0) {
+                container.innerHTML = '<p>No responses yet.</p>';
+                return;
+            }
+
+            container.innerHTML = responses.map((r, i) => {
+                const violations = r.violations || {};
+                const snapshotCount = r.snapshots ? r.snapshots.length : 0;
+                
+                return `
+                <div class="response-item">
+                    <strong>${i + 1}. ${r.name}</strong> (${r.email})<br>
+                    Started: ${new Date(r.startTime).toLocaleString()}<br>
+                    ${r.endTime ? `Ended: ${new Date(r.endTime).toLocaleString()}<br>` : ''}
+                    Status: ${r.submitted ? 'Submitted' : 'In Progress'}<br>
+                    Answered: ${Object.keys(r.answers).length}/25 questions<br>
+                    Webcam Snapshots: ${snapshotCount}<br>
+                    <div class="violation-details">
+                        <strong>⚠️ Violations (${violations.total || 0} total):</strong><br>
+                        • Fullscreen Exits: ${violations.fullscreenExit || 0}<br>
+                        • Tab Switches: ${violations.tabSwitch || 0}<br>
+                        • Window Blurs: ${violations.windowBlur || 0}<br>
+                        • Mouse Leaves: ${violations.mouseLeavee || 0}
+                    </div>
+                    ${snapshotCount > 0 ? `
+                        <div class="snapshot-gallery">
+                            ${r.snapshots.slice(0, 5).map(s => 
+                                `<img src="${s.image}" alt="Snapshot" title="${new Date(s.timestamp).toLocaleString()}">`
+                            ).join('')}
+                            ${snapshotCount > 5 ? `<span>+${snapshotCount - 5} more</span>` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+                `;
+            }).join('');
+        }
+
+        function downloadCSV() {
+            const responses = JSON.parse(localStorage.getItem('testResponses') || '[]');
+            
+            if (responses.length === 0) {
+                alert('No responses to download!');
+                return;
+            }
+
+            let csv = 'Name,Email,Start Time,End Time,Status,Questions Answered,Total Violations,Fullscreen Exits,Tab Switches,Window Blurs,Mouse Leaves,Webcam Snapshots,Submission Reason';
+            
+            questions.forEach((q, i) => {
+                csv += `,"Q${i + 1}"`;
+            });
+            csv += '\n';
+
+            responses.forEach(r => {
+                const v = r.violations || {};
+                const row = [
+                    `"${r.name}"`,
+                    `"${r.email}"`,
+                    `"${new Date(r.startTime).toLocaleString()}"`,
+                    r.endTime ? `"${new Date(r.endTime).toLocaleString()}"` : 'N/A',
+                    r.submitted ? 'Submitted' : 'In Progress',
+                    Object.keys(r.answers).length,
+                    v.total || 0,
+                    v.fullscreenExit || 0,
+                    v.tabSwitch || 0,
+                    v.windowBlur || 0,
+                    v.mouseLeavee || 0,
+                    r.snapshots ? r.snapshots.length : 0,
+                    `"${r.submissionReason || 'N/A'}"`
+                ];
+
+                questions.forEach((q, i) => {
+                    const answer = r.answers[i] || '';
+                    row.push(`"${answer.replace(/"/g, '""')}"`);
+                });
+
+                csv += row.join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `test_responses_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function downloadSnapshots() {
+            const responses = JSON.parse(localStorage.getItem('testResponses') || '[]');
+            
+            if (responses.length === 0) {
+                alert('No responses to download!');
+                return;
+            }
+
+            // Create a text file with all snapshot data
+            let snapshotData = 'WEBCAM SNAPSHOTS REPORT\n';
+            snapshotData += '='.repeat(50) + '\n\n';
+
+            responses.forEach((r, idx) => {
+                snapshotData += `Student ${idx + 1}: ${r.name} (${r.email})\n`;
+                snapshotData += `Total Snapshots: ${r.snapshots ? r.snapshots.length : 0}\n`;
+                snapshotData += '-'.repeat(50) + '\n';
+
+                if (r.snapshots && r.snapshots.length > 0) {
+                    r.snapshots.forEach((snap, snapIdx) => {
+                        snapshotData += `\nSnapshot ${snapIdx + 1}:\n`;
+                        snapshotData += `Time: ${new Date(snap.timestamp).toLocaleString()}\n`;
+                        snapshotData += `Image Data: ${snap.image}\n`;
+                        snapshotData += '\n';
+                    });
+                }
+                snapshotData += '\n' + '='.repeat(50) + '\n\n';
+            });
+
+            const blob = new Blob([snapshotData], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `webcam_snapshots_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            alert('Snapshots downloaded! The file contains base64 image data. You can view images by:\n1. Copy the base64 data\n2. Paste into browser console: var img = new Image(); img.src = "data:image/jpeg;base64,YOUR_DATA"; document.body.appendChild(img);');
+        }
+
+        function backToLogin() {
+            document.getElementById('adminScreen').classList.remove('active');
+            document.getElementById('loginScreen').classList.add('active');
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
