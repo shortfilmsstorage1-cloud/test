@@ -631,7 +631,7 @@
 
         const MAX_VIOLATIONS = 10;
         const SNAPSHOT_INTERVAL = 60000;
-        const TEST_DURATION = 40 * 60; // 1 minute in seconds for testing
+        const TEST_DURATION = 1 * 60; // 1 minute in seconds for testing
 
         // EmailJS Configuration - Get these from https://www.emailjs.com/
         const EMAILJS_CONFIG = {
@@ -746,46 +746,51 @@
         }
 
         function generateViolationReport() {
-            let html = '<div style="font-family:Arial,sans-serif;">';
+            let text = '';
             
             const v = currentStudent.violations || {};
             const hasViolations = v.total > 0;
             
-            html += `<div style="background:${hasViolations ? '#fff3cd' : '#d4edda'};padding:15px;border-radius:8px;margin-bottom:15px;">`;
-            html += `<h3 style="margin:0 0 10px 0;color:#333;">Violation Summary</h3>`;
-            html += `<div style="font-size:24px;font-weight:bold;color:${hasViolations ? '#856404' : '#28a745'};">${v.total || 0} Total Violations</div>`;
-            html += '</div>';
+            text += '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+            text += 'VIOLATION SUMMARY\n';
+            text += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n';
+            text += `Total Violations: ${v.total || 0}\n`;
+            text += `Status: ${hasViolations ? '⚠️ VIOLATIONS DETECTED' : '✓ NO VIOLATIONS'}\n\n`;
             
             if (hasViolations) {
-                html += '<div style="background:#fff;padding:15px;border-radius:8px;border:1px solid #ddd;">';
-                html += '<h4 style="margin:0 0 10px 0;color:#333;">Breakdown:</h4>';
-                html += `<div>• Fullscreen Exits: <strong>${v.fullscreenExit || 0}</strong></div>`;
-                html += `<div>• Tab Switches: <strong>${v.tabSwitch || 0}</strong></div>`;
-                html += `<div>• Window Blurs: <strong>${v.windowBlur || 0}</strong></div>`;
-                html += `<div>• Mouse Leaves: <strong>${v.mouseLeavee || 0}</strong></div>`;
+                text += 'BREAKDOWN:\n';
+                text += `• Fullscreen Exits: ${v.fullscreenExit || 0}\n`;
+                text += `• Tab Switches: ${v.tabSwitch || 0}\n`;
+                text += `• Window Blurs: ${v.windowBlur || 0}\n`;
+                text += `• Mouse Leaves: ${v.mouseLeavee || 0}\n\n`;
                 
                 if (v.timestamps && v.timestamps.length > 0) {
-                    html += '<h4 style="margin:15px 0 10px 0;color:#333;">Violation Log:</h4>';
+                    text += 'VIOLATION LOG:\n';
+                    text += '─────────────────────────────────────────────────\n';
                     v.timestamps.forEach((vlog, idx) => {
-                        html += `<div style="padding:8px;margin:5px 0;background:#f8f9fa;border-left:3px solid #ff9500;border-radius:3px;">`;
-                        html += `<strong>${idx + 1}.</strong> ${vlog.message}<br>`;
-                        html += `<small style="color:#666;">${new Date(vlog.timestamp).toLocaleString()}</small>`;
-                        html += '</div>';
+                        text += `\n${idx + 1}. ${vlog.message}\n`;
+                        text += `   Time: ${new Date(vlog.timestamp).toLocaleString()}\n`;
                     });
                 }
-                html += '</div>';
             }
             
-            html += '</div>';
-            return html;
+            text += '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+            return text;
         }
 
         async function sendEmailSubmission() {
             try {
+                console.log('Starting email submission...');
+                console.log('Student data:', currentStudent.name, currentStudent.email);
+                console.log('Answers count:', Object.keys(currentStudent.answers).length);
+                
                 const csv = generateCSV();
                 const snapshotsHTML = generateSnapshotsHTML();
                 const formattedAnswers = generateFormattedAnswers();
                 const violationReport = generateViolationReport();
+                
+                console.log('Generated CSV length:', csv.length);
+                console.log('Generated formatted answers length:', formattedAnswers.length);
                 
                 // Calculate score for MCQ
                 let correctCount = 0;
@@ -795,6 +800,7 @@
                     }
                 });
                 const mcqScore = `${correctCount}/20`;
+                console.log('MCQ Score:', mcqScore);
 
                 // EmailJS template parameters
                 const templateParams = {
@@ -812,6 +818,9 @@
                     test_link: window.location.href
                 };
 
+                console.log('Sending email with EmailJS...');
+                console.log('Template params keys:', Object.keys(templateParams));
+                
                 const response = await emailjs.send(
                     EMAILJS_CONFIG.SERVICE_ID,
                     EMAILJS_CONFIG.TEMPLATE_ID,
@@ -819,9 +828,16 @@
                 );
 
                 console.log('Email sent successfully:', response);
+                console.log('Response status:', response.status);
+                console.log('Response text:', response.text);
                 return true;
             } catch (error) {
                 console.error('Error sending email:', error);
+                console.error('Error details:', error.message);
+                console.error('Error stack:', error.stack);
+                if (error.text) {
+                    console.error('Error text:', error.text);
+                }
                 return false;
             }
         }
@@ -1143,7 +1159,7 @@
             localStorage.setItem('testResponses', JSON.stringify(allResponses));
         }
 
-        function confirmSubmit() {
+        async function confirmSubmit() {
             const answered = Object.keys(currentStudent.answers).length;
             const unanswered = 25 - answered;
             
@@ -1157,11 +1173,11 @@
             }
             
             if (confirm(message)) {
-                submitTest(false, 'Manual submission');
+                await submitTest(false, 'Manual submission');
             }
         }
 
-        function submitTest(autoSubmit = false, reason = '') {
+        async function submitTest(autoSubmit = false, reason = '') {
             clearInterval(timerInterval);
             clearInterval(autoSaveInterval);
             clearInterval(snapshotInterval);
@@ -1176,14 +1192,26 @@
             // Save to localStorage
             saveToStorage();
 
-            // Send email with CSV and photos
-            sendEmailSubmission().then(success => {
+            // Show loading message
+            const submitButton = document.querySelector('.test-screen .btn');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Submitting... Please wait';
+            }
+
+            // Send email with CSV and photos - WAIT for it to complete
+            try {
+                const success = await sendEmailSubmission();
                 if (success) {
                     console.log('Test submitted successfully via email');
                 } else {
                     console.error('Failed to send email, but data saved locally');
+                    alert('Warning: Email submission may have failed, but your answers are saved locally.');
                 }
-            });
+            } catch (error) {
+                console.error('Error during email submission:', error);
+                alert('Warning: Email submission encountered an error, but your answers are saved locally.');
+            }
 
             // Stop webcam
             if (webcamStream) {
