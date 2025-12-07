@@ -778,86 +778,91 @@
             return text;
         }
 
-        function generateFullReportHTML() {
-            let html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Test Report - ' + currentStudent.name + '</title>';
-            html += '<style>body{font-family:Arial,sans-serif;max-width:1200px;margin:0 auto;padding:20px;background:#f5f5f5;}';
-            html += '.header{background:#1e3c72;color:white;padding:30px;border-radius:10px;margin-bottom:30px;}';
-            html += '.section{background:white;padding:25px;margin:20px 0;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}';
-            html += '.section h2{color:#1e3c72;border-bottom:2px solid #1e3c72;padding-bottom:10px;margin-bottom:20px;}';
-            html += '.question{background:#f8f9fa;padding:15px;margin:15px 0;border-left:4px solid #2a5298;border-radius:5px;}';
+        function generateAnswersHTML() {
+            let html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Answers - ' + currentStudent.name + '</title>';
+            html += '<style>body{font-family:Arial,sans-serif;max-width:900px;margin:0 auto;padding:20px;background:#f5f5f5;}';
+            html += '.header{background:#1e3c72;color:white;padding:20px;border-radius:8px;margin-bottom:20px;}';
+            html += '.question{background:white;padding:20px;margin:15px 0;border-left:4px solid #2a5298;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}';
             html += '.correct{color:#28a745;font-weight:bold;}.incorrect{color:#dc3545;font-weight:bold;}';
-            html += '.violation-item{background:#fff3cd;padding:10px;margin:10px 0;border-left:3px solid #ff9500;border-radius:3px;}';
-            html += 'table{width:100%;border-collapse:collapse;}td,th{padding:12px;text-align:left;border-bottom:1px solid #ddd;}';
-            html += '.snapshot-img{max-width:300px;border:2px solid #ddd;border-radius:5px;margin:10px;}</style></head><body>';
+            html += 'h3{color:#1e3c72;margin-bottom:10px;}</style></head><body>';
             
-            // Header
-            html += '<div class="header"><h1>Test Submission Report</h1>';
-            html += '<p><strong>Student:</strong> ' + currentStudent.name + '</p>';
-            html += '<p><strong>Email:</strong> ' + currentStudent.email + '</p>';
-            html += '<p><strong>Submission Time:</strong> ' + new Date().toLocaleString() + '</p></div>';
+            html += '<div class="header"><h1>Student Answers</h1>';
+            html += '<p><strong>Student:</strong> ' + currentStudent.name + ' (' + currentStudent.email + ')</p></div>';
             
-            // Summary
-            html += '<div class="section"><h2>Summary</h2><table>';
-            let correctCount = 0;
-            questions.forEach((q, i) => {
-                if (q.type === 'mcq' && currentStudent.answers[i] === q.correct) correctCount++;
-            });
-            html += '<tr><td><strong>Questions Answered:</strong></td><td>' + Object.keys(currentStudent.answers).length + ' / 25</td></tr>';
-            html += '<tr><td><strong>MCQ Score:</strong></td><td style="font-size:18px;color:#28a745;">' + correctCount + ' / 20</td></tr>';
-            html += '<tr><td><strong>Total Violations:</strong></td><td style="color:#dc3545;">' + (currentStudent.violations.total || 0) + '</td></tr>';
-            html += '</table></div>';
-            
-            // Answers
-            html += '<div class="section"><h2>Student Answers</h2>';
             questions.forEach((q, i) => {
                 const answer = currentStudent.answers[i] || 'Not answered';
                 const isCorrect = q.type === 'mcq' && answer === q.correct;
                 html += '<div class="question">';
-                html += '<p><strong>Question ' + (i + 1) + ' (' + (q.type === 'mcq' ? 'Multiple Choice' : 'Short Answer') + '):</strong></p>';
-                html += '<p>' + q.question + '</p>';
+                html += '<h3>Question ' + (i + 1) + ' (' + (q.type === 'mcq' ? 'MCQ' : 'Short Answer') + ')</h3>';
+                html += '<p><strong>Q:</strong> ' + q.question + '</p>';
                 if (q.type === 'mcq') {
                     html += '<p><strong>Student Answer:</strong> ' + answer + '</p>';
                     html += '<p><strong>Correct Answer:</strong> ' + q.correct + '</p>';
                     html += '<p class="' + (isCorrect ? 'correct">✓ CORRECT' : 'incorrect">✗ INCORRECT') + '</p>';
                 } else {
-                    html += '<p><strong>Answer:</strong></p><p style="white-space:pre-wrap;background:white;padding:10px;border-radius:5px;">' + answer + '</p>';
+                    html += '<p><strong>Answer:</strong></p>';
+                    html += '<div style="background:#f8f9fa;padding:15px;border-radius:5px;white-space:pre-wrap;word-wrap:break-word;">' + answer + '</div>';
                 }
                 html += '</div>';
             });
-            html += '</div>';
             
-            // Violations
+            html += '</body></html>';
+            return html;
+        }
+
+        function generateViolationsHTML() {
+            let html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Violations - ' + currentStudent.name + '</title>';
+            html += '<style>body{font-family:Arial,sans-serif;max-width:900px;margin:0 auto;padding:20px;background:#f5f5f5;}';
+            html += '.header{background:#ff9500;color:white;padding:20px;border-radius:8px;margin-bottom:20px;}';
+            html += '.violation-item{background:white;padding:15px;margin:10px 0;border-left:3px solid #ff9500;border-radius:5px;}</style></head><body>';
+            
             const v = currentStudent.violations || {};
-            html += '<div class="section"><h2>Proctoring Report</h2>';
-            html += '<p><strong>Total Violations:</strong> ' + (v.total || 0) + '</p>';
+            html += '<div class="header"><h1>Proctoring Report</h1>';
+            html += '<p><strong>Student:</strong> ' + currentStudent.name + '</p>';
+            html += '<p><strong>Total Violations:</strong> ' + (v.total || 0) + '</p></div>';
+            
             if (v.total > 0) {
-                html += '<p><strong>Breakdown:</strong></p><ul>';
+                html += '<div style="background:white;padding:20px;border-radius:8px;"><h3>Breakdown:</h3><ul>';
                 html += '<li>Fullscreen Exits: ' + (v.fullscreenExit || 0) + '</li>';
                 html += '<li>Tab Switches: ' + (v.tabSwitch || 0) + '</li>';
                 html += '<li>Window Blurs: ' + (v.windowBlur || 0) + '</li>';
                 html += '<li>Mouse Leaves: ' + (v.mouseLeavee || 0) + '</li></ul>';
+                
                 if (v.timestamps && v.timestamps.length > 0) {
-                    html += '<p><strong>Violation Log:</strong></p>';
+                    html += '<h3>Violation Log:</h3>';
                     v.timestamps.forEach((vlog, idx) => {
                         html += '<div class="violation-item"><strong>' + (idx + 1) + '.</strong> ' + vlog.message;
                         html += '<br><small>' + new Date(vlog.timestamp).toLocaleString() + '</small></div>';
                     });
                 }
+                html += '</div>';
             } else {
-                html += '<p style="color:#28a745;">✓ No violations detected</p>';
+                html += '<div style="background:white;padding:20px;border-radius:8px;color:#28a745;"><h2>✓ No violations detected</h2></div>';
             }
-            html += '</div>';
             
-            // Snapshots
-            html += '<div class="section"><h2>Webcam Snapshots</h2>';
-            html += '<p><strong>Total Snapshots:</strong> ' + (currentStudent.snapshots ? currentStudent.snapshots.length : 0) + '</p>';
+            html += '</body></html>';
+            return html;
+        }
+
+        function generateSnapshotsLightHTML() {
+            let html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Snapshots - ' + currentStudent.name + '</title>';
+            html += '<style>body{font-family:Arial,sans-serif;max-width:1000px;margin:0 auto;padding:20px;background:#f5f5f5;}';
+            html += '.header{background:#007aff;color:white;padding:20px;border-radius:8px;margin-bottom:20px;}';
+            html += '.snapshot{background:white;padding:20px;margin:15px 0;border-radius:8px;text-align:center;}';
+            html += 'img{max-width:100%;max-height:400px;border:2px solid #ddd;border-radius:5px;}</style></head><body>';
+            
+            html += '<div class="header"><h1>Webcam Snapshots</h1>';
+            html += '<p><strong>Student:</strong> ' + currentStudent.name + '</p>';
+            html += '<p><strong>Total:</strong> ' + (currentStudent.snapshots ? currentStudent.snapshots.length : 0) + ' snapshots</p></div>';
+            
             if (currentStudent.snapshots && currentStudent.snapshots.length > 0) {
                 currentStudent.snapshots.forEach((snap, idx) => {
-                    html += '<div style="margin:20px 0;"><p><strong>Snapshot ' + (idx + 1) + '</strong> - ' + new Date(snap.timestamp).toLocaleString() + '</p>';
-                    html += '<img src="' + snap.image + '" alt="Snapshot ' + (idx + 1) + '" class="snapshot-img"></div>';
+                    html += '<div class="snapshot">';
+                    html += '<h3>Snapshot ' + (idx + 1) + '</h3>';
+                    html += '<p>' + new Date(snap.timestamp).toLocaleString() + '</p>';
+                    html += '<img src="' + snap.image + '" alt="Snapshot ' + (idx + 1) + '"></div>';
                 });
             }
-            html += '</div>';
             
             html += '</body></html>';
             return html;
@@ -876,30 +881,38 @@
                 });
                 const mcqScore = correctCount + '/20';
                 
-                // Generate full HTML report
-                const fullReport = generateFullReportHTML();
+                // Generate separate HTML sections (avoiding size limits)
+                const answersHTML = generateAnswersHTML();
+                const violationsHTML = generateViolationsHTML();
+                const snapshotsHTML = generateSnapshotsLightHTML();
                 
-                // Create a summary of answers (just first 50 chars of each)
-                let answerSummary = '';
-                questions.slice(0, 5).forEach((q, i) => {
-                    const ans = currentStudent.answers[i] || 'Not answered';
-                    answerSummary += 'Q' + (i + 1) + ': ' + (ans.length > 50 ? ans.substring(0, 50) + '...' : ans) + '\n';
-                });
+                // Create brief summary
+                let summary = 'MCQ Score: ' + mcqScore + '\n';
+                summary += 'Questions Answered: ' + Object.keys(currentStudent.answers).length + '/25\n';
+                summary += 'Violations: ' + (currentStudent.violations.total || 0) + '\n';
+                summary += 'Snapshots: ' + (currentStudent.snapshots ? currentStudent.snapshots.length : 0) + '\n\n';
+                summary += 'View complete details in the HTML sections below.';
                 
-                // EmailJS template parameters - MINIMAL DATA
+                // EmailJS template parameters - SPLIT INTO SECTIONS
                 const templateParams = {
                     to_email: EMAILJS_CONFIG.TO_EMAIL,
                     student_name: currentStudent.name,
                     student_email: currentStudent.email,
                     submission_time: new Date().toLocaleString(),
+                    mcq_score: mcqScore,
                     questions_answered: Object.keys(currentStudent.answers).length,
                     total_violations: currentStudent.violations.total || 0,
-                    mcq_score: mcqScore,
-                    answer_preview: answerSummary,
-                    full_report: fullReport
+                    total_snapshots: currentStudent.snapshots ? currentStudent.snapshots.length : 0,
+                    summary: summary,
+                    answers_html: answersHTML,
+                    violations_html: violationsHTML,
+                    snapshots_html: snapshotsHTML
                 };
 
                 console.log('Sending email...');
+                console.log('Answers HTML size:', answersHTML.length);
+                console.log('Violations HTML size:', violationsHTML.length);
+                console.log('Snapshots HTML size:', snapshotsHTML.length);
                 
                 const response = await emailjs.send(
                     EMAILJS_CONFIG.SERVICE_ID,
@@ -911,6 +924,7 @@
                 return true;
             } catch (error) {
                 console.error('Email error:', error);
+                console.error('Error details:', error.message);
                 return false;
             }
         }
