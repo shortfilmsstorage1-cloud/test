@@ -534,7 +534,7 @@
                     <h3>📋 Test Instructions</h3>
                     <ul>
                         <li>Total Duration: <strong>40 minutes</strong></li>
-                        <li>Questions: 20 Multiple Choice + 5 Short Answer</li>
+                        <li>Questions: <strong>30 Multiple Choice Questions</strong></li>
                         <li>The test will enter full-screen mode automatically</li>
                         <li>Your answers are auto-saved every 30 seconds</li>
                         <li>Test will auto-submit when time expires</li>
@@ -791,18 +791,13 @@
             
             questions.forEach((q, i) => {
                 const answer = currentStudent.answers[i] || 'Not answered';
-                const isCorrect = q.type === 'mcq' && answer === q.correct;
+                const isCorrect = answer === q.correct;
                 html += '<div class="question">';
-                html += '<h3>Question ' + (i + 1) + ' (' + (q.type === 'mcq' ? 'MCQ' : 'Short Answer') + ')</h3>';
+                html += '<h3>Question ' + (i + 1) + '</h3>';
                 html += '<p><strong>Q:</strong> ' + q.question + '</p>';
-                if (q.type === 'mcq') {
-                    html += '<p><strong>Student Answer:</strong> ' + answer + '</p>';
-                    html += '<p><strong>Correct Answer:</strong> ' + q.correct + '</p>';
-                    html += '<p class="' + (isCorrect ? 'correct">✓ CORRECT' : 'incorrect">✗ INCORRECT') + '</p>';
-                } else {
-                    html += '<p><strong>Answer:</strong></p>';
-                    html += '<div style="background:#f8f9fa;padding:15px;border-radius:5px;white-space:pre-wrap;word-wrap:break-word;">' + answer + '</div>';
-                }
+                html += '<p><strong>Student Answer:</strong> ' + answer + '</p>';
+                html += '<p><strong>Correct Answer:</strong> ' + q.correct + '</p>';
+                html += '<p class="' + (isCorrect ? 'correct">✓ CORRECT' : 'incorrect">✗ INCORRECT') + '</p>';
                 html += '</div>';
             });
             
@@ -875,11 +870,11 @@
                 // Calculate score
                 let correctCount = 0;
                 questions.forEach((q, i) => {
-                    if (q.type === 'mcq' && currentStudent.answers[i] === q.correct) {
+                    if (currentStudent.answers[i] === q.correct) {
                         correctCount++;
                     }
                 });
-                const mcqScore = correctCount + '/20';
+                const mcqScore = correctCount + '/30';
                 
                 // Generate separate HTML sections (avoiding size limits)
                 const answersHTML = generateAnswersHTML();
@@ -888,7 +883,7 @@
                 
                 // Create brief summary
                 let summary = 'MCQ Score: ' + mcqScore + '\n';
-                summary += 'Questions Answered: ' + Object.keys(currentStudent.answers).length + '/25\n';
+                summary += 'Questions Answered: ' + Object.keys(currentStudent.answers).length + '/30\n';
                 summary += 'Violations: ' + (currentStudent.violations.total || 0) + '\n';
                 summary += 'Snapshots: ' + (currentStudent.snapshots ? currentStudent.snapshots.length : 0) + '\n\n';
                 summary += 'View complete details in the HTML sections below.';
@@ -943,7 +938,7 @@
         };
 
         const questions = [
-            // Multiple Choice Questions
+            // Linux Commands (10 questions)
             {type: 'mcq', question: 'Which command is used to print the full path of the current working directory?', options: ['ls', 'cd', 'pwd', 'cat'], correct: 'pwd'},
             {type: 'mcq', question: 'How do you create a new, empty file named report.txt?', options: ['mkdir report.txt', 'touch report.txt', 'cat report.txt', 'new report.txt'], correct: 'touch report.txt'},
             {type: 'mcq', question: 'Which command would you use to display the last 10 lines of a file named logfile.log?', options: ['head logfile.log', 'less logfile.log', 'cat logfile.log', 'tail logfile.log'], correct: 'tail logfile.log'},
@@ -954,23 +949,30 @@
             {type: 'mcq', question: 'Which command would you use to see a list of currently running processes?', options: ['ps', 'top', 'netstat', 'Both a and b'], correct: 'Both a and b'},
             {type: 'mcq', question: 'In the permission string drwxr-xr--, what does the first character d signify?', options: ['It is a device file', 'It is a directory', 'The file is deletable', 'It is a data file'], correct: 'It is a directory'},
             {type: 'mcq', question: 'Which systemctl command would you use to check if the apache2 service is running?', options: ['systemctl start apache2', 'systemctl enable apache2', 'systemctl status apache2', 'systemctl stop apache2'], correct: 'systemctl status apache2'},
+            
+            // Networking (10 questions)
             {type: 'mcq', question: 'What is the main purpose of DNS (Domain Name System)?', options: ['To assign IP addresses to computers', 'To translate human-readable domain names (like google.com) into IP addresses', 'To secure network traffic', 'To manage network hardware'], correct: 'To translate human-readable domain names (like google.com) into IP addresses'},
             {type: 'mcq', question: 'Which command is most commonly used to test network connectivity to another host by sending packets?', options: ['ip', 'ifconfig', 'netstat', 'ping'], correct: 'ping'},
             {type: 'mcq', question: 'What is SSH (Secure Shell) primarily used for?', options: ['Browsing websites securely', 'Transferring files graphically', 'Providing a secure remote login to a server command line', 'Streaming video content'], correct: 'Providing a secure remote login to a server command line'},
             {type: 'mcq', question: 'In networking, what is a "port"?', options: ['A physical connector on a router', 'A numerical identifier for a specific application or service on a computer', 'A type of network cable', 'A security vulnerability'], correct: 'A numerical identifier for a specific application or service on a computer'},
             {type: 'mcq', question: 'Which of these is a private IP address, not routable on the public internet?', options: ['8.8.8.8', '192.168.1.10', '13.107.21.200', '208.67.222.222'], correct: '192.168.1.10'},
+            {type: 'mcq', question: 'What does HTTP stand for?', options: ['HyperText Transfer Protocol', 'High Transfer Text Protocol', 'HyperText Transmission Process', 'Home Tool Transfer Protocol'], correct: 'HyperText Transfer Protocol'},
+            {type: 'mcq', question: 'Which protocol is used for secure web browsing?', options: ['FTP', 'HTTP', 'HTTPS', 'SMTP'], correct: 'HTTPS'},
+            {type: 'mcq', question: 'What is the default port number for SSH?', options: ['21', '22', '23', '25'], correct: '22'},
+            {type: 'mcq', question: 'Which command displays network interface configuration in Linux?', options: ['netstat', 'ipconfig', 'ifconfig', 'netconfig'], correct: 'ifconfig'},
+            {type: 'mcq', question: 'What is a subnet mask used for?', options: ['To encrypt network traffic', 'To divide an IP network into subnetworks', 'To block malicious traffic', 'To assign DNS names'], correct: 'To divide an IP network into subnetworks'},
+            
+            // Cloud Computing & OpenStack (10 questions)
             {type: 'mcq', question: 'OpenStack is primarily an example of which cloud service model?', options: ['SaaS (Software as a Service)', 'PaaS (Platform as a Service)', 'IaaS (Infrastructure as a Service)', 'FaaS (Function as a Service)'], correct: 'IaaS (Infrastructure as a Service)'},
             {type: 'mcq', question: 'Which OpenStack component is responsible for identity, user management, and authentication?', options: ['Nova', 'Glance', 'Cinder', 'Keystone'], correct: 'Keystone'},
             {type: 'mcq', question: 'If you want to upload a new VM image (like an Ubuntu QCOW2 file) for others to use, which OpenStack service would you interact with?', options: ['Glance', 'Neutron', 'Nova', 'Swift'], correct: 'Glance'},
             {type: 'mcq', question: 'The core OpenStack service that manages the lifecycle of virtual machines (creating, starting, stopping) is:', options: ['Cinder', 'Nova', 'Keystone', 'Neutron'], correct: 'Nova'},
             {type: 'mcq', question: 'What is the function of a hypervisor (like KVM or VirtualBox)?', options: ['To manage network routing', 'To create, run, and manage virtual machines', 'To provide a web-based user interface', 'To store user passwords'], correct: 'To create, run, and manage virtual machines'},
-            
-            // Short Answer Questions
-            {type: 'short', question: 'What is the difference between the cat and less commands in Linux?'},
-            {type: 'short', question: 'In Linux, what is the purpose of file permissions? Briefly explain what "owner," "group," and "other" refer to.'},
-            {type: 'short', question: 'Explain the difference between a Public Cloud and a Private Cloud.'},
-            {type: 'short', question: 'What are the roles of Neutron and Cinder in an OpenStack environment?'},
-            {type: 'short', question: 'Describe the basic authentication flow in OpenStack. What does Keystone provide to a user after a successful login?'}
+            {type: 'mcq', question: 'Which OpenStack service provides networking capabilities for virtual machines?', options: ['Nova', 'Neutron', 'Cinder', 'Swift'], correct: 'Neutron'},
+            {type: 'mcq', question: 'What is the primary difference between public and private cloud?', options: ['Cost structure', 'Ownership and access control', 'Performance capabilities', 'Programming languages used'], correct: 'Ownership and access control'},
+            {type: 'mcq', question: 'Which OpenStack component provides block storage for virtual machines?', options: ['Swift', 'Cinder', 'Glance', 'Neutron'], correct: 'Cinder'},
+            {type: 'mcq', question: 'What does IaaS stand for?', options: ['Internet as a Service', 'Infrastructure as a Service', 'Integration as a Service', 'Information as a Service'], correct: 'Infrastructure as a Service'},
+            {type: 'mcq', question: 'In cloud computing, what is elasticity?', options: ['The ability to stretch network cables', 'The ability to scale resources up or down based on demand', 'The flexibility of programming languages', 'The resilience of storage systems'], correct: 'The ability to scale resources up or down based on demand'}
         ];
 
         async function startTest() {
@@ -1138,26 +1140,22 @@
                 card.className = 'question-card';
 
                 let html = `
-                    <div class="question-number">Question ${index + 1} ${q.type === 'short' ? '(Short Answer)' : '(Multiple Choice)'}</div>
+                    <div class="question-number">Question ${index + 1}</div>
                     <div class="question-text">${q.question}</div>
                 `;
 
-                if (q.type === 'mcq') {
-                    html += '<div class="options">';
-                    q.options.forEach((opt, optIndex) => {
-                        const optionId = `q${index}_opt${optIndex}`;
-                        const escapedOpt = opt.replace(/'/g, "&apos;");
-                        html += `
-                            <div class="option" onclick="selectOption(${index}, '${escapedOpt}', this)">
-                                <input type="radio" name="q${index}" id="${optionId}" value="${opt}">
-                                <label for="${optionId}">${String.fromCharCode(97 + optIndex)}) ${opt}</label>
-                            </div>
-                        `;
-                    });
-                    html += '</div>';
-                } else {
-                    html += `<textarea id="q${index}" placeholder="Type your answer here..." oninput="saveShortAnswer(${index})"></textarea>`;
-                }
+                html += '<div class="options">';
+                q.options.forEach((opt, optIndex) => {
+                    const optionId = `q${index}_opt${optIndex}`;
+                    const escapedOpt = opt.replace(/'/g, "&apos;");
+                    html += `
+                        <div class="option" onclick="selectOption(${index}, '${escapedOpt}', this)">
+                            <input type="radio" name="q${index}" id="${optionId}" value="${opt}">
+                            <label for="${optionId}">${String.fromCharCode(97 + optIndex)}) ${opt}</label>
+                        </div>
+                    `;
+                });
+                html += '</div>';
 
                 card.innerHTML = html;
                 container.appendChild(card);
@@ -1189,7 +1187,7 @@
 
         function updateProgress() {
             const answered = Object.keys(currentStudent.answers).length;
-            document.getElementById('progressInfo').textContent = `Progress: ${answered}/25`;
+            document.getElementById('progressInfo').textContent = `Progress: ${answered}/30`;
         }
 
         function showSaveIndicator() {
@@ -1248,9 +1246,9 @@
 
         async function confirmSubmit() {
             const answered = Object.keys(currentStudent.answers).length;
-            const unanswered = 25 - answered;
+            const unanswered = 30 - answered;
             
-            let message = `You have answered ${answered} out of 25 questions.`;
+            let message = `You have answered ${answered} out of 30 questions.`;
             
             if (unanswered > 0) {
                 message += `\n\n${unanswered} question(s) are still unanswered.`;
@@ -1339,7 +1337,7 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Questions Answered:</span>
-                    <span class="detail-value">${Object.keys(currentStudent.answers).length} / 25</span>
+                    <span class="detail-value">${Object.keys(currentStudent.answers).length} / 30</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Test Duration:</span>
