@@ -630,8 +630,9 @@
         });
 
         const MAX_VIOLATIONS = 10;
-        const SNAPSHOT_INTERVAL = 60000;
-        const TEST_DURATION = 40 * 60; // 1 minute in seconds for testing
+        const SNAPSHOT_INTERVAL = 120000; // 2 minutes
+        const MAX_SNAPSHOTS = 3; // Maximum snapshots to keep
+        const TEST_DURATION = 40 * 60; // 40 minutes
 
         // EmailJS Configuration - Get these from https://www.emailjs.com/
         const EMAILJS_CONFIG = {
@@ -1054,10 +1055,16 @@
 
             const snapshot = {
                 timestamp: new Date().toISOString(),
-                image: canvas.toDataURL('image/jpeg', 0.7)
+                image: canvas.toDataURL('image/jpeg', 0.3) // Lower quality to reduce size
             };
 
             currentStudent.snapshots.push(snapshot);
+            
+            // Keep only the last MAX_SNAPSHOTS snapshots to prevent size issues
+            if (currentStudent.snapshots.length > MAX_SNAPSHOTS) {
+                currentStudent.snapshots.shift(); // Remove oldest snapshot
+            }
+            
             showSaveIndicator();
         }
 
